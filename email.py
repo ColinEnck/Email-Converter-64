@@ -2,6 +2,10 @@
 # to decode the attachment, the subject should end with 
 # 'b64' followed by a '-' and the filetype, such as:
 # "b64-csv"
+
+# currently, in order for this to work,
+# the words "Content-Transfer-Encoding: base64"\
+# cannot be a line in the email
 import sys
 import base64
 
@@ -19,20 +23,21 @@ for line in mailfile.readlines():
         attachments.append(line)
         b64_line = False
         continue
+    if "Content-Transfer-Encoding: base64" in line:
+        skip_lines = 2
+        b64_line = True
     words = line.split()
     if len(words) > 1:
         if words[0] == "Subject:":
             for word in words:
                 if "b64" in word:
                     filetypes.append(word.split("-")[1])
-        elif "base64" in words:
-            skip_lines = 2
-            b64_line = True
+            
 filenames = []
 for i in range(0, len(attachments)):
     filenames.append(f"attachment{i}.{filetypes[i]}")
 for i in range(0, len(filenames)):
     with open(filenames[i], "wb") as file:
         file.write(base64.b64decode(attachments[i]))
-with open(f"/var/mail/{sys.argv[1]}", "w") as file:
-    file.write("")
+# with open(f"/var/mail/{sys.argv[1]}", "w") as file:
+#     file.write("")
