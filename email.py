@@ -39,5 +39,5 @@ for i in range(0, len(attachments)):
 for i in range(0, len(filenames)):
     with open(filenames[i], "wb") as file:
         file.write(base64.b64decode(attachments[i]))
-# with open(f"/var/mail/{sys.argv[1]}", "w") as file:
-#     file.write("")
+with open(f"/var/mail/{sys.argv[1]}", "w") as file:
+    file.write("")
